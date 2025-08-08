@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Kru Pai Classroom – เกม 2 ตัวเลือก: รากใต้ดิน / ลำต้นใต้ดิน (25 ข้อ)</title>
+<meta name="description" content="เกม 2 ตัวเลือก วิทยาศาสตร์ ป.4–6: เลือกว่าเป็นรากใต้ดินหรือเป็นลำต้นใต้ดิน – 25 ข้อ จับเวลา 5 วินาทีต่อข้อ">
+<style>
+:root{
+  --bg:#fffdf5; --card:#ffffff; --primary:#f59e0b; --secondary:#22c55e;
+  --good:#12b886; --bad:#e03131; --text:#1f2937; --muted:#64748b;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,Segoe UI,Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+header{position:sticky;top:0;background:#fff;border-bottom:1px solid #fde68a;z-index:10}
+.wrap{max-width:920px;margin:0 auto;padding:14px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand .logo{width:14px;height:14px;border-radius:4px;background:var(--primary)}
+.brand .title{font-weight:900}
+.brand .tag{font-size:12px;color:var(--muted)}
+.app{max-width:920px;margin:18px auto;padding:14px}
+.card{background:var(--card);border:1px solid #fde68a;border-radius:18px;box-shadow:0 10px 22px rgba(2,6,23,.06);padding:18px}
+h1{margin:0 0 6px 0;font-size:26px}
+h2{margin:8px 0 10px 0;font-size:24px}
+.muted{color:var(--muted)}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+input[type=text]{width:100%;padding:14px 16px;border:1px solid #fcd34d;border-radius:12px;font-size:18px}
+button{border:0;border-radius:14px;padding:14px 16px;font-size:18px;cursor:pointer}
+.btn-start{background:var(--primary);color:#fff}
+.btn-a{background:#16a34a;color:#fff;font-weight:800}
+.btn-b{background:#0284c7;color:#fff;font-weight:800}
+.btn-ghost{background:#fff;border:1px solid #fcd34d}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#fef3c7;color:#9a3412;font-weight:700;font-size:12px;border:1px solid #fde68a}
+.progress{height:12px;background:#dcfce7;border-radius:999px;overflow:hidden;margin-top:8px}
+.bar{height:100%;width:100%;background:linear-gradient(90deg,var(--secondary),var(--primary))}
+.center{text-align:center}
+.big{font-size:34px}
+.small{font-size:14px;color:var(--muted)}
+.qa{margin-top:14px;text-align:center}
+.item{font-size:40px;font-weight:900;margin:10px 0}
+.buttons{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.feedback{margin-top:8px;font-weight:800}
+.good{color:var(--good)} .bad{color:var(--bad)}
+hr.sep{border:none;border-top:1px dashed #fcd34d;margin:14px 0}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;background:#111827;color:#fff;padding:10px 14px;border-radius:999px;font-size:14px;opacity:0;transition:.2s;pointer-events:none}
+#toast.show{opacity:1;bottom:26px}
+@media (min-width:640px){ .item{font-size:48px} }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <div class="logo"></div>
+      <div class="title">Kru Pai Classroom</div>
+      <div class="tag">เกม 2 ตัวเลือก • รากใต้ดิน / ลำต้นใต้ดิน • 25 ข้อ</div>
+    </div>
+  </div>
+</header>
+
+<main class="app wrap">
+  <!-- Start -->
+  <section id="screen-start" class="card">
+    <h1>เกม 2 ตัวเลือก: รากใต้ดิน หรือ ลำต้นใต้ดิน</h1>
+    <div class="muted">ป.4–6 • 25 ข้อ • จับเวลา <b>5 วินาทีต่อข้อ</b> • ตรวจทันที</div>
+    <div class="controls">
+      <input id="playerName" type="text" placeholder="ใส่ชื่อเล่นของหนู/นักเรียน"/>
+      <button class="btn-start" onclick="startGame()">เริ่มเกม</button>
+    </div>
+  </section>
+
+  <!-- Game -->
+  <section id="screen-game" class="card" style="display:none">
+    <div class="pills">
+      <span class="pill" id="playerBadge">ผู้เล่น</span>
+      <span class="pill" id="qIndexPill">ข้อ 1/25</span>
+      <span class="pill">คะแนน: <b id="scoreNow">0</b></span>
+      <span class="pill">เวลา: <b id="timeLeft">5</b>s</span>
+    </div>
+    <div class="progress"><div id="bar" class="bar"></div></div>
+    <div class="qa">
+      <div class="small">คำถาม:</div>
+      <div class="item" id="itemName">—</div>
+      <div class="buttons">
+        <button class="btn-a" onclick="answer(true)">🌱 รากใต้ดิน</button>
+        <button class="btn-b" onclick="answer(false)">🌿 ลำต้นใต้ดิน</button>
+      </div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+    <div class="controls" style="justify-content:space-between;margin-top:12px">
+      <button class="btn-ghost" onclick="prevQ()">ย้อนกลับ</button>
+      <button class="btn-ghost" onclick="skipQ()">ข้ามข้อ</button>
+      <button class="btn-ghost" onclick="nextQ()">ข้อต่อไป</button>
+    </div>
+  </section>
+
+  <!-- Result -->
+  <section id="screen-result" class="card" style="display:none">
+    <div class="center">
+      <div class="big">สรุปคะแนน</div>
+      <div style="margin-top:6px"><span id="resultName" class="pill"></span></div>
+      <div style="margin-top:10px;font-size:22px">ได้ <b id="scoreFinal">0</b> / <b id="totalFinal">0</b></div>
+      <div class="controls" style="justify-content:center;margin-top:12px">
+        <button class="btn-start" onclick="restart()">เล่นใหม่</button>
+      </div>
+    </div>
+    <hr class="sep"/>
+    <div id="summaryList"></div>
+  </section>
+</main>
+
+<div id="toast">หมดเวลา! ระบบข้ามให้แล้ว</div>
+
+<script>
+// true = รากใต้ดิน (storage root), false = ลำต้นใต้ดิน (rhizome/bulb/corm/tuber)
+const ITEMS = [
+  // Roots (true)
+  {name:"แครอท", r:true},{name:"หัวไชเท้า", r:true},{name:"หัวผักกาด (turnip)", r:true},{name:"หัวบีต", r:true},
+  {name:"มันสำปะหลัง", r:true},{name:"มันเทศ", r:true},{name:"มันแกว (jicama)", r:true},{name:"โกโบ (burdock)", r:true},
+  {name:"โสม", r:true},{name:"ผักชีฝรั่ง (ราก)", r:true},{name:"ขี้เหล็กอเมริกัน (รากกินได้)", r:true},
+  // Underground stems (false)
+  {name:"มันฝรั่ง", r:false},{name:"ขิง (เหง้า)", r:false},{name:"ข่า (เหง้า)", r:false},{name:"ขมิ้น (เหง้า)", r:false},
+  {name:"กระชาย (เหง้า)", r:false},{name:"บัว (เหง้าบัว)", r:false},{name:"ไผ่ (เหง้า)", r:false},{name:"กล้วย (เหง้า)", r:false},
+  {name:"หอมแดง (หัว)", r:false},{name:"กระเทียม (หัว)", r:false},{name:"เผือก (หัว/คอร์ม)", r:false},{name:"แห้ว (คอร์ม)", r:false},
+  {name:"มันอ้อย/มันมือเสือ (หัวใต้ดิน)", r:false},{name:"ตะไคร้ (เหง้าสั้น)", r:false}
+];
+
+// Ensure 25 items; slice if extra, shuffle afterward
+const LIMIT = 25;
+const shuffle = arr => arr.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+
+let list=[]; // shuffled list of items
+let idx=0, score=0, player="";
+let picked = []; // true/false/"T"/"S"
+let timer=null, tLeft=5;
+
+const el = s=>document.querySelector(s);
+
+function startGame(){
+  player = el("#playerName").value.trim() || "นักเรียนคนเก่ง";
+  list = shuffle(ITEMS.slice()).slice(0, LIMIT);
+  idx=0; score=0; picked = new Array(list.length).fill(null);
+  el("#scoreNow").textContent=score;
+  el("#playerBadge").textContent="ผู้เล่น: "+player;
+  el("#screen-start").style.display="none";
+  el("#screen-game").style.display="";
+  renderQ();
+}
+
+function renderQ(){
+  if(idx>=list.length){ showResult(); return; }
+  const item=list[idx];
+  el("#qIndexPill").textContent=`ข้อ ${idx+1}/${list.length}`;
+  el("#itemName").textContent=item.name;
+  el("#feedback").textContent="";
+  // reset and start timer
+  clearInterval(timer); tLeft=5;
+  el("#timeLeft").textContent=tLeft;
+  el("#bar").style.width="100%";
+  const startTime = Date.now();
+  timer = setInterval(()=>{
+    const passed = (Date.now()-startTime)/1000;
+    const remain = Math.max(0, 5 - passed);
+    tLeft = Math.ceil(remain);
+    el("#timeLeft").textContent=tLeft;
+    el("#bar").style.width = (remain/5*100)+"%";
+    if(remain<=0){
+      clearInterval(timer);
+      picked[idx] = "T"; // timeout
+      showToast("หมดเวลา! ระบบข้ามให้แล้ว");
+      setTimeout(()=>{ idx++; renderQ(); }, 500);
+    }
+  }, 100);
+}
+
+function answer(choice){ // choice: true=root, false=stem
+  if(idx>=list.length) return;
+  clearInterval(timer);
+  const ok = choice === list[idx].r;
+  picked[idx] = choice;
+  if(ok){ score++; el("#scoreNow").textContent=score; el("#feedback").innerHTML = "<span class='good'>✅ ถูกต้อง</span>"; }
+  else{ el("#feedback").innerHTML = "<span class='bad'>❌ ไม่ถูก</span>"; }
+  setTimeout(()=>{ idx++; renderQ(); }, 500);
+}
+
+function skipQ(){
+  clearInterval(timer);
+  picked[idx] = "S"; // skipped
+  showToast("ข้ามข้อ");
+  setTimeout(()=>{ idx++; renderQ(); }, 200);
+}
+function nextQ(){ clearInterval(timer); idx++; renderQ(); }
+function prevQ(){ clearInterval(timer); if(idx>0){ idx--; renderQ(); } }
+
+function showResult(){
+  el("#screen-game").style.display="none";
+  el("#screen-result").style.display="";
+  el("#resultName").textContent="ผู้เล่น: "+player;
+  el("#scoreFinal").textContent=score;
+  el("#totalFinal").textContent=list.length;
+
+  const box=el("#summaryList"); box.innerHTML="";
+  list.forEach((it,i)=>{
+    const you = picked[i];
+    let tag="", cls="";
+    if(you==="T"){ tag="หมดเวลา"; cls="bad"; }
+    else if(you==="S"){ tag="ข้าม"; cls=""; }
+    else if(you===it.r){ tag="ถูก"; cls="good"; }
+    else { tag="ผิด"; cls="bad"; }
+    const ans = it.r ? "รากใต้ดิน" : "ลำต้นใต้ดิน";
+    const div=document.createElement("div");
+    div.className="card"; div.style.marginBottom="8px"; div.style.borderRadius="12px";
+    div.innerHTML = `<b>ข้อ ${i+1}</b> — ${it.name} • เฉลย: <b>${ans}</b> <span class='${cls}' style="margin-left:6px">(${tag})</span>`;
+    box.appendChild(div);
+  });
+}
+
+function restart(){
+  el("#screen-result").style.display="none";
+  el("#screen-start").style.display="";
+}
+
+function showToast(msg){
+  const t = el("#toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 900);
+}
+</script>
+</body>
+</html>
